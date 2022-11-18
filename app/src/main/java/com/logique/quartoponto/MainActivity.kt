@@ -2,14 +2,9 @@ package com.logique.quartoponto
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.util.Date
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,20 +15,20 @@ class MainActivity : AppCompatActivity() {
     lateinit var ponto1Validator: TextView
 
     // TODO: Fazer validação para texto digitado nos pontos
-    val textWatcher = object : TextWatcher {
-
-        override fun afterTextChanged(s: Editable?) {
-        }
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-        }
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            if (s != null && s.toString() == "08:00") {
-                ponto1Validator.text = "Disparou o validator"
-            } else {
-                ponto1Validator.text = ""
-            }
-        }
-    }
+//    val textWatcher = object : TextWatcher {
+//
+//        override fun afterTextChanged(s: Editable?) {
+//        }
+//        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//        }
+//        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//            if (s != null && s.length == 2) {
+//                ponto1Validator.text = "Disparou o validator"
+//            } else {
+//                ponto1Validator.text = ""
+//            }
+//        }
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         quartoPonto = findViewById(R.id.quartoPonto)
         ponto1Validator = findViewById(R.id.ponto1_validator)
         btnCalcular.setOnClickListener {calcularQuartoPonto()}
-        ponto1.addTextChangedListener(textWatcher)
+//        ponto1.addTextChangedListener(textWatcher)
     }
 
     fun calcularQuartoPonto() {
@@ -62,11 +57,15 @@ class MainActivity : AppCompatActivity() {
 
         var tempoNecessarioRestante = tempoTotalNecessarioMinutos - tempoPagoMinutos
 
+        var minutosNecessarios = tempoNecessarioRestante % 60
         var horasNecessarias = tempoNecessarioRestante / 60
-        var minutosNecessarios = (tempoNecessarioRestante % 60) + hora3[1].toInt()
 
-        var horaFinal = if (minutosNecessarios > 59) (hora3[0].toInt() + horasNecessarias + (minutosNecessarios % 60)).toString() else (hora3[0].toInt() + horasNecessarias).toString()
-        var minutoFinal = minutosNecessarios % 60
+        var minuto = (hora3[1].toInt() + minutosNecessarios) % 60
+        var hora = if (minutosNecessarios + hora3[1].toInt() > 59) hora3[0].toInt() + horasNecessarias + 1 else hora3[0].toInt() + horasNecessarias
+        hora %= 24
+
+        val horaFinal = String.format("%2s", hora).replace(" ", "0")
+        val minutoFinal = String.format("%2s", minuto).replace(" ", "0")
 
         quartoPonto.text = "$horaFinal:$minutoFinal"
     }
